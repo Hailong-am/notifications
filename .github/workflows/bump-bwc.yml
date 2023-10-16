@@ -3,7 +3,7 @@ name: Bump bwc version
 on:
   push:
     tags:
-      - '*'
+      - '**'
 
 permissions: {}
 jobs:
