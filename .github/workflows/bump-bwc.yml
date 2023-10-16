@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - '**'
+      - '*.*.*.*'
 
 permissions: {}
 jobs:
@@ -25,18 +25,17 @@ jobs:
         run: |
           TAG=$(echo "${GITHUB_REF#refs/*/}")
           CURRENT_VERSION_ARRAY=($(echo "$TAG" | tr . '\n'))
-          CURRENT_VERSION=$(IFS=. ; echo "${CURRENT_VERSION_ARRAY[*]:0:3}")
-          CURRENT_VERSION_ARRAY[2]=$((CURRENT_VERSION_ARRAY[2]+1))
-          NEXT_VERSION=$(IFS=. ; echo "${CURRENT_VERSION_ARRAY[*]:0:3}")
-          if [[ ${#CURRENT_VERSION_ARRAY[2]} -gt 1 ]]; then
-            NEXT_VERSION_ID="${CURRENT_VERSION_ARRAY[0]:0:3}0${CURRENT_VERSION_ARRAY[1]:0:3}${CURRENT_VERSION_ARRAY[2]:0:3}99"
-          else
-            NEXT_VERSION_ID=$(IFS=0 ; echo "${CURRENT_VERSION_ARRAY[*]:0:3}99")
-          fi
+          CURRENT_VERSION=$(IFS=. ; echo "${CURRENT_VERSION_ARRAY[*]:0:2}")
+          CURRENT_VERSION_ARRAY[1]=$((CURRENT_VERSION_ARRAY[1]+1))
+          NEXT_VERSION=$(IFS=. ; echo "${CURRENT_VERSION_ARRAY[*]:0:2}")
           echo "TAG=$TAG" >> $GITHUB_ENV
           echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
           echo "NEXT_VERSION=$NEXT_VERSION" >> $GITHUB_ENV
-          echo "NEXT_VERSION_ID=$NEXT_VERSION_ID" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ steps.github_app_token.outputs.token }}
 
       - name: Add bwc version to main branch
         run: |
