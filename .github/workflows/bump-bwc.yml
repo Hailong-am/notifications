@@ -1,6 +1,7 @@
 name: Bump bwc version
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - '**'
