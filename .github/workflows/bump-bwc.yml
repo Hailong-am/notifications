@@ -40,7 +40,7 @@ jobs:
       - name: Add bwc version to main branch
         run: |
           echo Adding bwc version $NEXT_VERSION after $CURRENT_VERSION
-          sed -i "s/def bwcVersionShort = \"$CURRENT_VERSION\"/def bwcVersionShort = "$NEXT_VERSION"/g" notifications/notifications/build.gradle
+          sed -i "s/def bwcVersionShort = \"$CURRENT_VERSION\"/def bwcVersionShort = \"$NEXT_VERSION\"/g" notifications/notifications/build.gradle
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
