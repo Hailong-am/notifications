@@ -2,6 +2,10 @@ name: Bump bwc version
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        type: string
+        required: true
   push:
     tags:
       - '*.*.*.*'
@@ -20,10 +24,14 @@ jobs:
           #installation_id: 22958780
           installation_id: 42934585
 
-      - uses: actions/checkout@v4
       - name: Fetch Tag and Version Information
+        uses: actions/checkout@v4
         run: |
-          TAG=$(echo "${GITHUB_REF#refs/*/}")
+          if [ -z ${{ inputs.tag }} ]; then
+            TAG=${{ inputs.tag }}
+          else
+            TAG=$(echo "${GITHUB_REF#refs/*/}")
+          fi
           CURRENT_VERSION_ARRAY=($(echo "$TAG" | tr . '\n'))
           CURRENT_VERSION=$(IFS=. ; echo "${CURRENT_VERSION_ARRAY[*]:0:3}")
           CURRENT_VERSION_ARRAY[1]=$((CURRENT_VERSION_ARRAY[1]+1))
@@ -37,9 +45,9 @@ jobs:
           ref: main
           token: ${{ steps.github_app_token.outputs.token }}
 
-      - name: Add bwc version to main branch
+      - name: Bump bwc version to main branch
         run: |
-          echo Adding bwc version $NEXT_VERSION after $CURRENT_VERSION
+          echo Bumping bwc version to $NEXT_VERSION
           sed -i "s/def bwcVersionShort = \"$CURRENT_VERSION\"/def bwcVersionShort = \"$NEXT_VERSION\"/g" notifications/notifications/build.gradle
 
       - name: Create Pull Request
@@ -48,7 +56,7 @@ jobs:
           token: ${{ steps.github_app_token.outputs.token }}
           base: main
           branch: 'create-pull-request/patch-main'
-          commit-message: Add bwc version ${{ env.NEXT_VERSION }}
+          commit-message: Bump bwc version to ${{ env.NEXT_VERSION }}
           signoff: true
           delete-branch: true
           labels: |
