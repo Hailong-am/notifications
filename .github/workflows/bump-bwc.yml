@@ -24,10 +24,10 @@ jobs:
           #installation_id: 22958780
           installation_id: 42934585
 
+      - uses: actions/checkout@v4
       - name: Fetch Tag and Version Information
-        uses: actions/checkout@v4
         run: |
-          if [ -z ${{ inputs.tag }} ]; then
+          if [ -n ${{ inputs.tag }} ]; then
             TAG=${{ inputs.tag }}
           else
             TAG=$(echo "${GITHUB_REF#refs/*/}")
@@ -45,7 +45,7 @@ jobs:
           ref: main
           token: ${{ steps.github_app_token.outputs.token }}
 
-      - name: Bump bwc version to main branch
+      - name: Bump bwc version for main branch
         run: |
           echo Bumping bwc version to $NEXT_VERSION
           sed -i "s/def bwcVersionShort = \"$CURRENT_VERSION\"/def bwcVersionShort = \"$NEXT_VERSION\"/g" notifications/notifications/build.gradle
